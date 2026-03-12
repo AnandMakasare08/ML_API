@@ -16,12 +16,17 @@ FILE_ID = "1OCl67Ht0zbPgpcJ1Y88h1kvTvGtl9QpH"
 
 if not os.path.exists(MODEL_PATH):
     print("⬇️ Downloading model from Google Drive...")
-    gdown.download(
-        f"https://drive.google.com/uc?id={FILE_ID}",
-        MODEL_PATH,
-        quiet=False
-    )
-    print("✅ Model downloaded!")
+    url = f"https://drive.google.com/uc?id={FILE_ID}"
+    
+    # Try gdown with fuzzy=True — handles large file warning page
+    gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
+    
+    # Verify file actually downloaded properly
+    if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1000:
+        print("❌ Model download failed!")
+        raise Exception("Model download failed — check Google Drive permissions")
+    
+    print("✅ Model downloaded successfully!")
 
 print("⏳ Loading model...")
 model = load_model(MODEL_PATH)

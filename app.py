@@ -5,15 +5,17 @@ from flask_cors import CORS
 from PIL import Image
 import numpy as np
 import io
-import tensorflow as tf
+
+# ✅ Correct import — no more tf.lite reference
+try:
+    import tflite_runtime.interpreter as tflite
+except ImportError:
+    import tensorflow.lite as tflite
 
 app = Flask(__name__)
 CORS(app)
 
-
 MODEL_PATH = "plant_model.tflite"
-
-
 FILE_ID = "1lfEs9qA0WCltRud__cQLS2ErMI9ws53b"
 
 if not os.path.exists(MODEL_PATH):
@@ -28,9 +30,9 @@ if not os.path.exists(MODEL_PATH):
 
     print("✅ Model downloaded successfully!")
 
-# ✅ Load as TFLite interpreter — uses much less RAM
+# ✅ Fixed — using tflite.Interpreter not tf.lite.Interpreter
 print("⏳ Loading TFLite model...")
-interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+interpreter = tflite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 
 input_details = interpreter.get_input_details()
@@ -74,7 +76,6 @@ def predict():
         image = request.files["image"].read()
         img_array = preprocess_image(image)
 
-        # ✅ TFLite inference
         interpreter.set_tensor(input_details[0]['index'], img_array)
         interpreter.invoke()
         predictions = interpreter.get_tensor(output_details[0]['index'])

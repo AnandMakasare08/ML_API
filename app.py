@@ -6,7 +6,6 @@ from PIL import Image
 import numpy as np
 import io
 
-# ✅ Correct import — no more tf.lite reference
 try:
     import tflite_runtime.interpreter as tflite
 except ImportError:

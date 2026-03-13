@@ -1,6 +1,6 @@
 venv/
 __pycache__/
-*.h5
 *.pyc
 .env
-*.keras
+trained_model.h5
+plant_model.tflite
